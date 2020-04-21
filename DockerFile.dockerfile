@@ -49,15 +49,17 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* 
-RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew 
-ADD . /root/.linuxbrew/bin
-RUN ln -s /root/.linuxbrew/Homebrew/bin/brew /root/.linuxbrew/bin/ 
-ENV PATH=/root/.linuxbrew/bin:/home/root/.linuxbrew/sbin:$PATH \
+RUN mkdir /home/linuxbrew/    
+RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew/Homebrew 
+ADD . /home/linuxbrew/.linuxbrew/bin
+RUN ln -s /home/linuxbrew/.linuxbrew/Homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/ 
+ENV PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:"/home/linuxbrew/.linuxbrew/opt/python@3.8/bin":$PATH \
 	SHELL=/bin/bash 
 RUN brew install gcc
+RUN brew install python
 RUN brew install aws-vault
 RUN brew install terraform
-RUN brew install awscli
+RUN pip3 install awscli
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV AWS_VAULT_BACKEND="file"
