@@ -31,7 +31,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV HOMEBREW_NO_ENV_FILTERING=1
 # Configure apt and install packages
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils dialog wget ca-certificates 2>&1 \
+    && apt-get -y install --no-install-recommends apt-utils dialog wget ca-certificates binutils 2>&1 \
     #
     # Verify git, common tools / libs installed, add/modify non-root user, optionally install zsh
     && wget -q -O /tmp/common-setup.sh $COMMON_SCRIPT_SOURCE \
@@ -49,10 +49,16 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* 
+RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew 
+ADD . /root/.linuxbrew/bin
+RUN ln -s /root/.linuxbrew/Homebrew/bin/brew /root/.linuxbrew/bin/ 
+ENV PATH=/root/.linuxbrew/bin:/home/root/.linuxbrew/sbin:$PATH \
+	SHELL=/bin/bash 
+RUN brew install gcc
+RUN brew install aws-vault
+RUN brew install terraform
+RUN brew install awscli
 
-RUN git clone https://github.com/Homebrew/brew .linuxbrew/Homebrew 
-RUN .linuxbrew/Homebrew/bin/brew install gcc
-RUN .linuxbrew/Homebrew/bin/brew install aws-vault
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV AWS_VAULT_BACKEND="file"
 ENV DEBIAN_FRONTEND=dialog
