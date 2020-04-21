@@ -4,6 +4,13 @@
 #-------------------------------------------------------------------------------------------------------------
 FROM debian:9
 
+RUN apt-get update && apt-get -y install locales
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8 
+
 # This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
 # property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
 # will be updated to match your local UID/GID (when using the dockerFile property).
@@ -21,7 +28,7 @@ ARG COMMON_SCRIPT_SHA="dev-mode"
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
-
+ENV HOMEBREW_NO_ENV_FILTERING=1
 # Configure apt and install packages
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils dialog wget ca-certificates 2>&1 \
@@ -41,10 +48,11 @@ RUN apt-get update \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
-    && mkdir ~/.linuxbrew/bin \
-    && ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin \
-    && eval $(~/.linuxbrew/bin/brew shellenv)
+    && rm -rf /var/lib/apt/lists/* 
+
+RUN git clone https://github.com/Homebrew/brew .linuxbrew/Homebrew 
+RUN .linuxbrew/Homebrew/bin/brew install gcc
+RUN .linuxbrew/Homebrew/bin/brew install aws-vault
 # Switch back to dialog for any ad-hoc use of apt-get
+ENV AWS_VAULT_BACKEND="file"
 ENV DEBIAN_FRONTEND=dialog
