@@ -15,7 +15,7 @@
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": ["erd0s.terraform-autocomplete","mauve.terraform","ms-vscode.powershell","yzhang.markdown-all-in-one"]
+	"extensions": ["erd0s.terraform-autocomplete","mauve.terraform","ms-vscode.powershell","yzhang.markdown-all-in-one"],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
@@ -28,7 +28,5 @@
 
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-in-docker.
 	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-
-	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
+	 "mounts": [ "source=$(pwd),target=/root/,type=bind" ]
 }
